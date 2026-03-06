@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --color-primary: #dc6c29;
+  --color-cream: #f4efda;
+  --color-dark: #1a1a1a;
+  --color-whatsapp: #25D366;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-dark font-sans antialiased;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&display=swap');
