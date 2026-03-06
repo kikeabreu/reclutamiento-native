@@ -1,11 +1,8 @@
 import express from "express";
-import { createServer as createViteServer } from "vite";
-import { google } from "googleapis";
 import axios from "axios";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
-import { Client } from "@notionhq/client";
 
 dotenv.config();
 
@@ -80,25 +77,33 @@ const sanitizeNotionId = (id: string | undefined) => {
 };
 
 const NOTION_DATABASE_ID = sanitizeNotionId(process.env.NOTION_DATABASE_ID);
-const notion = new Client({ auth: process.env.NOTION_TOKEN }) as any;
 
 const app = express();
 app.use(express.json());
 
 const PORT = 3000;
 
-// Google OAuth Setup
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  `${process.env.APP_URL}/auth/google/callback`
-);
+// Lazy load Google Auth only if needed
+let oauth2Client: any;
+function getGoogleAuth() {
+  if (!oauth2Client && process.env.GOOGLE_CLIENT_ID) {
+    const { google } = require("googleapis");
+    oauth2Client = new google.auth.OAuth2(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET,
+      `${process.env.APP_URL}/auth/google/callback`
+    );
+  }
+  return oauth2Client;
+}
 
 // --- API Routes ---
 
 // 1. Auth Routes for Blanca
 app.get("/auth/google", (req, res) => {
-  const url = oauth2Client.generateAuthUrl({
+  const auth = getGoogleAuth();
+  if (!auth) return res.status(500).send("Google Auth not configured");
+  const url = auth.generateAuthUrl({
     access_type: "offline",
     scope: ["https://www.googleapis.com/auth/calendar.events"],
     prompt: "consent",
@@ -108,9 +113,11 @@ app.get("/auth/google", (req, res) => {
 
 app.get("/auth/google/callback", async (req, res) => {
   const { code } = req.query;
+  const auth = getGoogleAuth();
+  if (!auth) return res.status(500).send("Google Auth not configured");
   try {
-    const { tokens } = await oauth2Client.getToken(code as string);
-    if (tokens.refresh_token) {
+    const { tokens } = await auth.getToken(code as string);
+    if (tokens.refresh_token && db) {
       db.prepare("INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)").run(
         "google_refresh_token",
         tokens.refresh_token
@@ -289,18 +296,23 @@ app.post("/api/register", async (req, res) => {
 });
 
 // --- Vite Middleware ---
-if (process.env.NODE_ENV !== "production") {
-  const vite = await createViteServer({
-    server: { middlewareMode: true },
-    appType: "spa",
-  });
-  app.use(vite.middlewares);
-} else {
-  app.use(express.static(path.join(__dirname, "dist")));
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "dist", "index.html"));
-  });
+async function setupVite() {
+  if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
+    const vite = await createViteServer({
+      server: { middlewareMode: true },
+      appType: "spa",
+    });
+    app.use(vite.middlewares);
+  } else {
+    app.use(express.static(path.join(__dirname, "dist")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "dist", "index.html"));
+    });
+  }
 }
+
+setupVite();
 
 // --- Server Start ---
 if (process.env.NODE_ENV !== "production") {
