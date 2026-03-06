@@ -221,6 +221,7 @@ app.post("/api/register", async (req, res) => {
               Ocupacion: { rich_text: [{ text: { content: userData.occupation || '' } }] },
               Interes: { rich_text: [{ text: { content: userData.interest || '' } }] },
               Experiencia: { rich_text: [{ text: { content: userData.experience || 'Sin especificar' } }] },
+              Registro: { date: { start: new Date().toISOString() } },
             },
           },
           {
