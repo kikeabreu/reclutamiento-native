@@ -2,7 +2,6 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import { google } from "googleapis";
 import axios from "axios";
-import Database from "better-sqlite3";
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,13 +12,29 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const db = new Database("data.db");
-db.exec(`
-  CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
-    value TEXT
-  )
-`);
+let db: any;
+async function initDb() {
+  try {
+    const { default: Database } = await import("better-sqlite3");
+    db = new Database("data.db");
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS settings (
+        key TEXT PRIMARY KEY,
+        value TEXT
+      )
+    `);
+  } catch (e: any) {
+    console.warn("SQLite could not be initialized (expected on Vercel):", e.message);
+    db = {
+      prepare: () => ({
+        run: () => ({}),
+        get: () => null
+      })
+    };
+  }
+}
+
+initDb();
 
 const sanitizeNotionId = (id: string | undefined) => {
   if (!id) return "";
@@ -287,6 +302,11 @@ if (process.env.NODE_ENV !== "production") {
   });
 }
 
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+// --- Server Start ---
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+export default app;
