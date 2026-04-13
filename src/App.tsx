@@ -672,36 +672,35 @@ export default function App() {
     new URLSearchParams(window.location.search).get('embed') === 'true';
 
   const handleFormSubmit = async (data: any) => {
-    setUserData(data);
-    setIsLoading(true);
+  setUserData(data);
+  setIsLoading(true);
 
-    try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userData: data }),
-      });
+  try {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userData: data }),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-  if (response.ok && result.success) {
-  if (!result.notion) {
-    console.warn('Registrado pero falló el guardado en Notion. Revisa la configuración de la tabla.');
-  }
-  if (typeof window !== 'undefined' && (window as any).fbq) {
-    (window as any).fbq('track', 'Lead');
-  }
-  setScreen('confirmation');
-}
-      } else {
-        alert(`Error al registrar: ${result.error || 'Inténtalo de nuevo.'}`);
+    if (response.ok && result.success) {
+      if (!result.notion) {
+        console.warn('Registrado pero falló el guardado en Notion. Revisa la configuración de la tabla.');
       }
-    } catch {
-      alert('Error de conexión. Por favor, revisa tu internet e inténtalo de nuevo.');
-    } finally {
-      setIsLoading(false);
+      if (typeof window !== 'undefined' && (window as any).fbq) {
+        (window as any).fbq('track', 'Lead');
+      }
+      setScreen('confirmation');
+    } else {
+      alert(`Error al registrar: ${result.error || 'Inténtalo de nuevo.'}`);
     }
-  };
+  } catch {
+    alert('Error de conexión. Por favor, revisa tu internet e inténtalo de nuevo.');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex flex-col bg-cream/30">
