@@ -688,6 +688,9 @@ export default function App() {
         if (!result.notion) {
           console.warn('Registrado pero falló el guardado en Notion. Revisa la configuración de la tabla.');
         }
+        if (typeof window !== 'undefined' && (window as any).fbq) {
+  (window as any).fbq('track', 'Lead');
+}
         setScreen('confirmation');
       } else {
         alert(`Error al registrar: ${result.error || 'Inténtalo de nuevo.'}`);
