@@ -139,7 +139,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
               onClick={onNext}
               className="bg-primary hover:bg-primary/90 text-white w-full py-5 rounded-xl font-extrabold text-lg md:text-xl transition-all shadow-2xl shadow-primary/30 flex items-center justify-center gap-3 uppercase tracking-wider"
             >
-              Agendar sesión con Blanca
+              Agendar sesión con Steph
               <CalendarIcon size={20} />
             </button>
             <p className="text-xs text-dark/40 font-bold uppercase tracking-widest mt-3">
@@ -157,7 +157,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
               Un mensaje importante antes de continuar
             </p>
             <h2 className="text-3xl md:text-5xl font-black tracking-tight leading-tight">
-              Blanca te habla directo:
+              Steph te habla directo:
               <br />
               <span className="italic font-serif text-cream/70">así es realmente esto.</span>
             </h2>
@@ -171,7 +171,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
                 allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                 referrerPolicy="strict-origin-when-cross-origin"
                 style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                title="Blanca | Native Master Broker"
+                title="Steph | Native Master Broker"
               />
             </div>
           </div>
@@ -181,7 +181,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
               onClick={onNext}
               className="bg-primary hover:bg-primary/90 text-white w-full md:w-auto md:px-16 py-6 rounded-xl font-black text-xl md:text-2xl transition-all shadow-2xl shadow-primary/40 uppercase tracking-widest"
             >
-              Agendar sesión con Blanca
+              Agendar sesión con Steph
             </button>
           </div>
         </div>
@@ -292,7 +292,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
               {
                 icon: Users,
                 title: 'Acompañamiento 1 a 1',
-                desc: 'Blanca y los líderes no solo te enseñan — te acompañan hasta tu primera venta.',
+                desc: 'Steph y los líderes no solo te enseñan — te acompañan hasta tu primera venta.',
               },
               {
                 icon: Star,
@@ -331,7 +331,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
               "El día que vi a Miguel, uno de los socios, en bermuda y sudado arreglando sillas…
               entendí que aquí nadie está por encima del trabajo."
             </p>
-            <p className="font-bold text-dark/50 text-sm uppercase tracking-widest">— Blanca, Coordinadora</p>
+            <p className="font-bold text-dark/50 text-sm uppercase tracking-widest">— Steph, Coordinadora</p>
           </div>
         </div>
       </section>
@@ -410,7 +410,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
               onClick={onNext}
               className="bg-primary hover:bg-primary/90 text-white w-full py-7 rounded-2xl font-black text-2xl transition-all shadow-2xl shadow-primary/40 flex items-center justify-center gap-4 group uppercase tracking-widest"
             >
-              Agendar sesión con Blanca
+              Agendar sesión con Steph
               <ArrowRight className="group-hover:translate-x-2 transition-transform" size={36} />
             </button>
           </div>
@@ -470,7 +470,7 @@ const QualificationForm = ({
           Cuéntanos sobre ti
         </h2>
         <p className="text-dark/50 font-medium leading-relaxed">
-          Esta información le ayuda a Blanca a preparar una conversación útil para ti.
+          Esta información le ayuda a Steph a preparar una conversación útil para ti.
         </p>
       </div>
 
@@ -580,7 +580,7 @@ const QualificationForm = ({
 // ─── Confirmation Page ──────────────────────────────────────────────────────────
 
 const ConfirmationPage = ({ userData }: { userData: any }) => {
-  const blancaPhone = '5219991166251';
+  const stephPhone = '5219991166251';
 
   const experienceMap: Record<string, string> = {
     none: 'No, ninguna',
@@ -589,7 +589,7 @@ const ConfirmationPage = ({ userData }: { userData: any }) => {
   };
 
   const message = encodeURIComponent(
-    `Hola Blanca, me registré para la sesión en Native Master Broker.\n\n` +
+    `Hola Steph, me registré para la sesión en Native Master Broker.\n\n` +
       `📌 *Mis Datos:*\n` +
       `- Nombre: ${userData?.name || 'Prospecto'}\n` +
       `- Email: ${userData?.email || 'No proporcionado'}\n` +
@@ -602,7 +602,7 @@ const ConfirmationPage = ({ userData }: { userData: any }) => {
       }\n\n` +
       `Me gustaría agendar mi conversación contigo ✨`
   );
-  const whatsappLink = `https://wa.me/${blancaPhone}?text=${message}`;
+  const whatsappLink = `https://wa.me/${stephPhone}?text=${message}`;
 
   return (
     <div className="flex-grow flex items-center justify-center py-12 px-6">
@@ -623,7 +623,7 @@ const ConfirmationPage = ({ userData }: { userData: any }) => {
           </h1>
           <p className="text-dark/60 font-medium text-lg leading-relaxed mb-8 max-w-sm mx-auto">
             Tus datos fueron registrados. El siguiente paso es coordinar tu sesión directamente
-            con Blanca por WhatsApp.
+            con Steph por WhatsApp.
           </p>
 
           <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8 text-amber-900">
@@ -633,7 +633,7 @@ const ConfirmationPage = ({ userData }: { userData: any }) => {
             </div>
             <p className="text-base font-medium leading-relaxed">
               El calendario aún no está disponible. Es necesario coordinar tu fecha directamente
-              con Blanca por WhatsApp.
+              con Steph por WhatsApp.
             </p>
           </div>
 
@@ -644,7 +644,7 @@ const ConfirmationPage = ({ userData }: { userData: any }) => {
             className="flex items-center justify-center gap-4 bg-[#25D366] hover:bg-[#20c05b] text-white w-full py-6 rounded-2xl font-black text-xl transition-all shadow-xl shadow-green-500/20 uppercase tracking-wide"
           >
             <MessageCircle size={24} />
-            Hablar con Blanca por WhatsApp
+            Hablar con Steph por WhatsApp
           </a>
         </div>
 

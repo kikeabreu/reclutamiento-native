@@ -99,7 +99,7 @@ function getGoogleAuth() {
 
 // --- API Routes ---
 
-// 1. Auth Routes for Blanca
+// 1. Auth Routes for Steph
 app.get("/auth/google", (req, res) => {
   const auth = getGoogleAuth();
   if (!auth) return res.status(500).send("Google Auth not configured");
