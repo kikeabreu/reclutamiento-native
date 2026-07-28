@@ -26,6 +26,8 @@ declare global {
       Player: new (element: HTMLIFrameElement) => {
         ready: () => Promise<void>;
         setPlaybackRate: (rate: number) => Promise<void>;
+        on: (eventName: 'ended', callback: () => void) => void;
+        off: (eventName: 'ended', callback: () => void) => void;
       };
     };
   }
@@ -35,15 +37,31 @@ declare global {
 
 const VimeoVideo = () => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [hasEnded, setHasEnded] = useState(false);
 
   useEffect(() => {
-    const initializePlayer = () => {
-      if (!iframeRef.current || !window.Vimeo?.Player) return;
+    let player:
+      | {
+          ready: () => Promise<void>;
+          setPlaybackRate: (rate: number) => Promise<void>;
+          on: (eventName: 'ended', callback: () => void) => void;
+          off: (eventName: 'ended', callback: () => void) => void;
+        }
+      | undefined;
+    let isMounted = true;
+    let script: HTMLScriptElement | undefined;
+    const handleEnded = () => {
+      if (isMounted) setHasEnded(true);
+    };
 
-      const player = new window.Vimeo.Player(iframeRef.current);
+    const initializePlayer = () => {
+      if (!isMounted || !iframeRef.current || !window.Vimeo?.Player) return;
+
+      player = new window.Vimeo.Player(iframeRef.current);
       player.ready().then(() => {
-        player.setPlaybackRate(1.25).catch(console.log);
+        if (isMounted) player?.setPlaybackRate(1.25).catch(() => {});
       });
+      player.on('ended', handleEnded);
     };
 
     const existingScript = document.querySelector<HTMLScriptElement>(
@@ -56,26 +74,55 @@ const VimeoVideo = () => {
       } else {
         existingScript.addEventListener('load', initializePlayer, { once: true });
       }
-      return;
+      return () => {
+        isMounted = false;
+        existingScript.removeEventListener('load', initializePlayer);
+        player?.off('ended', handleEnded);
+      };
     }
 
-    const script = document.createElement('script');
+    script = document.createElement('script');
     script.src = 'https://player.vimeo.com/api/player.js';
     script.onload = initializePlayer;
     document.body.appendChild(script);
+
+    return () => {
+      isMounted = false;
+      if (script) script.onload = null;
+      player?.off('ended', handleEnded);
+    };
   }, []);
 
   return (
-    <div style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
+    <div style={{ padding: '56.25% 0 0 0', position: 'relative', background: 'black' }}>
       <iframe
         ref={iframeRef}
         id="vimeo-player"
         src="https://player.vimeo.com/video/1213506698?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0"
         frameBorder="0"
-        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+        allow="autoplay; fullscreen; picture-in-picture"
         referrerPolicy="strict-origin-when-cross-origin"
-        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        style={{
+          display: hasEnded ? 'none' : 'block',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+        }}
         title="Segundo despertar economico Steph"
+      />
+      <div
+        id="black-screen"
+        style={{
+          display: hasEnded ? 'block' : 'none',
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          background: '#000',
+        }}
       />
     </div>
   );
