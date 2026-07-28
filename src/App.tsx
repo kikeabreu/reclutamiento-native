@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
@@ -19,6 +19,67 @@ import {
   TrendingUp,
   Heart,
 } from 'lucide-react';
+
+declare global {
+  interface Window {
+    Vimeo?: {
+      Player: new (element: HTMLIFrameElement) => {
+        ready: () => Promise<void>;
+        setPlaybackRate: (rate: number) => Promise<void>;
+      };
+    };
+  }
+}
+
+// ─── Vimeo Video ───────────────────────────────────────────────────────────────
+
+const VimeoVideo = () => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    const initializePlayer = () => {
+      if (!iframeRef.current || !window.Vimeo?.Player) return;
+
+      const player = new window.Vimeo.Player(iframeRef.current);
+      player.ready().then(() => {
+        player.setPlaybackRate(1.25).catch(console.log);
+      });
+    };
+
+    const existingScript = document.querySelector<HTMLScriptElement>(
+      'script[src="https://player.vimeo.com/api/player.js"]'
+    );
+
+    if (existingScript) {
+      if (window.Vimeo?.Player) {
+        initializePlayer();
+      } else {
+        existingScript.addEventListener('load', initializePlayer, { once: true });
+      }
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = 'https://player.vimeo.com/api/player.js';
+    script.onload = initializePlayer;
+    document.body.appendChild(script);
+  }, []);
+
+  return (
+    <div style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
+      <iframe
+        ref={iframeRef}
+        id="vimeo-player"
+        src="https://player.vimeo.com/video/1213506698?badge=0&autopause=0&player_id=0&app_id=58479&title=0&byline=0&portrait=0"
+        frameBorder="0"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+        title="Segundo despertar economico Steph"
+      />
+    </div>
+  );
+};
 
 // ─── Navbar ────────────────────────────────────────────────────────────────────
 
@@ -164,16 +225,7 @@ const LandingPage = ({ onNext }: { onNext: () => void }) => {
           </div>
 
           <div className="relative w-full max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl bg-black ring-1 ring-white/10">
-            <div style={{ padding: '56.25% 0 0 0', position: 'relative' }}>
-              <iframe
-                src="https://player.vimeo.com/video/1170458452?badge=0&autopause=0&player_id=0&app_id=58479&portrait=0&byline=0&title=0"
-                frameBorder="0"
-                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                title="Steph | Native Master Broker"
-              />
-            </div>
+            <VimeoVideo />
           </div>
 
           <div className="mt-12 text-center">
